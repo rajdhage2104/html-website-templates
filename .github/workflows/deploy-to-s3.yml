@@ -1,0 +1,27 @@
+name: Deploy to S3
+
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow on pushes to the 'main' branch; change if needed
+
+jobs:
+  deploy-to-s3:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the code from the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Deploy to S3
+      - name: Deploy to S3
+        uses: jakejarvis/s3-sync-action@v0.5.1
+        with:
+          args: --acl public-read --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}  # S3 bucket name (set this as a repository secret)
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}  # AWS Access Key ID (set this as a repository secret)
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # AWS Secret Access Key (set this as a repository secret)
+          AWS_REGION: 'us-east-1'  # Replace with your S3 bucket's region
+          SOURCE_DIR: './'  # Point to the root directory where 'index.html' and other files are located
